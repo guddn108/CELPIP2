@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>한국어 → 영어 실전 표현</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--p:#4338CA;--s:#10B981;--e:#E11D48;--bg:#F0F4FF;--txt:#1a1a2e;--muted:#64748B;--border:#E2E8F0;--r:16px;--gap:clamp(12px,3vw,18px)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Malgun Gothic',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto;padding:var(--gap) var(--gap) 80px}
+
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--gap)}
+.logo{font-size:clamp(16px,4vw,20px);font-weight:800;color:var(--p)}
+.logo span{color:var(--e)}
+.nav-links{display:flex;gap:6px}
+.nav-link{background:#4338CA;color:white;padding:5px 12px;border-radius:50px;font-size:12px;font-weight:700;text-decoration:none}
+
+.tabs{display:flex;gap:6px;margin-bottom:var(--gap);background:white;border-radius:12px;padding:5px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.tab{flex:1;padding:10px;border:none;border-radius:9px;font-size:clamp(13px,3.5vw,14px);font-weight:700;cursor:pointer;transition:all .2s;background:none;color:var(--muted);font-family:inherit;min-height:44px}
+.tab.active{background:var(--p);color:white;box-shadow:0 2px 8px rgba(67,56,202,.3)}
+
+.stats-bar{display:flex;gap:10px;margin-bottom:var(--gap)}
+.stat-chip{flex:1;background:white;border-radius:12px;padding:12px 8px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.stat-num{font-size:clamp(20px,5vw,26px);font-weight:800;color:var(--p)}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:2px}
+
+.cat-chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:var(--gap)}
+.cat-chip{padding:6px 14px;border-radius:50px;border:2px solid var(--border);background:white;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;color:var(--muted);white-space:nowrap}
+.cat-chip.active{border-color:var(--p);background:var(--p);color:white}
+
+.search-wrap{position:relative;margin-bottom:var(--gap)}
+.search-ico{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none}
+.search-input{width:100%;padding:11px 14px 11px 42px;border:2px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;color:var(--txt);background:white}
+.search-input:focus{border-color:var(--p);outline:none}
+
+.phrase-grid{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:560px){.phrase-grid{grid-template-columns:1fr 1fr}}
+
+.pc{background:white;border-radius:var(--r);box-shadow:0 2px 10px rgba(0,0,0,.06);cursor:pointer;transition:transform .15s,box-shadow .15s;overflow:hidden;user-select:none}
+.pc:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.pc.known{opacity:.55}
+.pc-top{padding:14px 16px 10px}
+.pc-cat{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--p);margin-bottom:7px}
+.pc-ko{font-size:clamp(13px,3.5vw,15px);font-weight:600;line-height:1.5;color:var(--txt)}
+.pc-hint{font-size:11px;color:var(--muted);margin-top:6px}
+.pc.revealed .pc-hint{display:none}
+.pc-en{font-size:clamp(12px,3vw,13px);line-height:1.6;color:#4F46E5;font-style:italic;display:none;padding:10px 16px 0;border-top:1.5px solid #EEF2FF;margin:0 0 0}
+.pc.revealed .pc-en{display:block;padding:10px 16px 0}
+.pc-actions{display:flex;justify-content:space-between;align-items:center;padding:8px 16px 12px;min-height:36px}
+.pc-tts{background:none;border:none;cursor:pointer;font-size:16px;padding:4px;opacity:.5;display:none}
+.pc.revealed .pc-tts{display:block}
+.pc-tts:hover{opacity:1}
+.pc-known-btn{font-size:11px;font-weight:700;padding:4px 10px;border-radius:50px;border:1.5px solid;cursor:pointer;transition:all .2s;display:none;font-family:inherit}
+.pc.revealed .pc-known-btn{display:block}
+.pc-known-btn.no{border-color:var(--border);color:var(--muted);background:white}
+.pc-known-btn.no:hover{border-color:var(--s);color:var(--s)}
+.pc-known-btn.yes{border-color:var(--s);color:var(--s);background:#D1FAE5}
+
+.no-results{text-align:center;padding:60px 20px;color:var(--muted);font-size:14px}
+.no-results .nr-ico{font-size:44px;margin-bottom:10px}
+
+.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
+@media(min-width:560px){.theme-grid{grid-template-columns:repeat(4,1fr)}}
+.theme-card{border-radius:var(--r);padding:clamp(16px,4vw,22px) 12px;text-align:center;color:white;cursor:pointer;transition:transform .15s,box-shadow .2s;position:relative;overflow:hidden}
+.theme-card::before{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;background:rgba(255,255,255,.1);border-radius:50%}
+.theme-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.theme-emoji{font-size:clamp(28px,8vw,36px);margin-bottom:8px}
+.theme-name{font-size:clamp(13px,3.5vw,15px);font-weight:800;margin-bottom:4px}
+.theme-count{font-size:11px;opacity:.85}
+.theme-done{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.25);border-radius:50px;padding:2px 7px;font-size:10px;font-weight:700}
+
+.theme-detail{display:none}
+.theme-detail.show{display:block;animation:fadeIn .2s ease}
+.tdh{display:flex;align-items:center;gap:10px;padding:14px 18px;border-radius:var(--r);color:white;margin-bottom:var(--gap);flex-wrap:wrap;gap:10px}
+.tdh-back{background:rgba(255,255,255,.2);border:none;color:white;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+.tdh-info{flex:1;min-width:100px}
+.tdh-name{font-size:clamp(15px,4vw,19px);font-weight:800}
+.tdh-sub{font-size:12px;opacity:.85;margin-top:2px}
+.tdh-quiz{background:white;border:none;border-radius:10px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;white-space:nowrap}
+.tdh-quiz:hover{transform:scale(1.04)}
+
+.theme-phrases{background:white;border-radius:var(--r);box-shadow:0 2px 10px rgba(0,0,0,.06);overflow:hidden}
+.tp-item{display:flex;align-items:flex-start;padding:13px 16px;gap:10px;border-bottom:1px solid var(--border)}
+.tp-item:last-child{border-bottom:none}
+.tp-item:hover{background:#FAFBFF}
+.tp-num{font-size:11px;font-weight:700;color:var(--muted);min-width:20px;padding-top:2px;flex-shrink:0}
+.tp-ko{flex:1;font-size:clamp(13px,3.5vw,14px);font-weight:600;color:var(--txt);line-height:1.5}
+.tp-divider{color:var(--border);padding-top:2px;font-size:13px}
+.tp-en{flex:1.2;font-size:clamp(12px,3vw,13px);color:#4F46E5;line-height:1.6;font-style:italic}
+.tp-tts{background:none;border:none;cursor:pointer;font-size:14px;padding:2px 0;opacity:.4;flex-shrink:0;padding-top:2px}
+.tp-tts:hover{opacity:1}
+
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);z-index:1000;overflow-y:auto;padding:20px 16px 40px}
+.modal-overlay.show{display:block}
+.quiz-box{background:white;border-radius:20px;padding:clamp(20px,5vw,28px);max-width:480px;margin:0 auto;animation:fadeUp .25s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+.qz-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.qz-prog-txt{font-size:13px;color:var(--muted);font-weight:600}
+.qz-score-live{font-size:13px;font-weight:700;color:var(--s)}
+.qz-bar-track{background:var(--border);height:4px;border-radius:50px;overflow:hidden;margin-bottom:20px}
+.qz-bar-fill{height:100%;background:linear-gradient(90deg,var(--p),#8B5CF6);border-radius:50px;transition:width .3s ease}
+.qz-dir{font-size:10px;font-weight:700;color:var(--p);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;background:#EEF2FF;display:inline-block;padding:3px 9px;border-radius:50px}
+.qz-q{font-size:clamp(15px,4vw,18px);font-weight:700;line-height:1.5;margin-bottom:20px;color:var(--txt)}
+.qz-opts{display:flex;flex-direction:column;gap:10px}
+.qz-opt{padding:13px 16px;border:2px solid var(--border);border-radius:12px;background:white;font-size:clamp(13px,3.5vw,14px);cursor:pointer;text-align:left;transition:all .15s;color:var(--txt);font-family:inherit;line-height:1.5;min-height:50px}
+.qz-opt:hover:not(:disabled){border-color:var(--p);background:#EEF2FF}
+.qz-opt.correct{border-color:var(--s)!important;background:#D1FAE5!important;color:#065F46}
+.qz-opt.wrong{border-color:var(--e)!important;background:#FEE2E2!important;color:#991B1B}
+.qz-feedback{font-size:12px;padding:9px 12px;border-radius:8px;margin-top:10px;display:none;line-height:1.5}
+.qz-feedback.show{display:block}
+.qz-feedback.ok{background:#D1FAE5;color:#065F46}
+.qz-feedback.no{background:#FEE2E2;color:#991B1B}
+.qz-next{width:100%;margin-top:14px;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--p),#8B5CF6);color:white;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:none}
+.qz-next.show{display:block}
+
+.qr{text-align:center}
+.qr-emoji{font-size:54px;margin-bottom:12px}
+.qr-title{font-size:clamp(18px,5vw,22px);font-weight:800;margin-bottom:6px}
+.qr-score{font-size:clamp(30px,8vw,42px);font-weight:800;color:var(--p);margin:10px 0 4px}
+.qr-sub{font-size:14px;color:var(--muted);margin-bottom:20px}
+.qr-review{text-align:left;margin-bottom:20px;max-height:200px;overflow-y:auto}
+.qr-review-title{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.qr-wrong-item{padding:10px 12px;background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:10px;margin-bottom:6px;font-size:13px;line-height:1.6}
+.qr-wrong-ko{font-weight:700;color:#92400E;margin-bottom:2px}
+.qr-wrong-en{color:#B45309;font-style:italic;font-size:12px}
+.qr-btns{display:flex;gap:10px}
+.qr-btn{flex:1;padding:13px;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;min-height:48px}
+.qr-retry{background:linear-gradient(135deg,var(--p),#8B5CF6);color:white}
+.qr-close{background:#F1F5F9;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="logo">한국어 → <span>영어</span></div>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">영어UP</a>
+      <a href="celpip.html" class="nav-link" style="background:#E11D48">CELPIP</a>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" id="tabDaily" onclick="switchTab('daily')">💬 일상 표현 200</button>
+    <button class="tab" id="tabTheme" onclick="switchTab('theme')">🗂️ 테마별 학습</button>
+  </div>
+  <div id="dailySection"></div>
+  <div id="themeSection" style="display:none"></div>
+</div>
+<div class="modal-overlay" id="quizModal" onclick="handleModalClick(event)">
+  <div class="quiz-box" id="quizBox" onclick="event.stopPropagation()"></div>
+</div>
+<script>
+// ============================================================
+// DATA — 일상 표현 200
+// ============================================================
+// format: [korean, english, category]
+// category: 'daily' | 'emotion' | 'opinion' | 'situation'
+const DAILY=[
+// ── 일상/행동 (1-50) ──
+['횡단보도에서 어떤 사람이 길을 건너고 있어.','Someone is crossing the street at the crosswalk.','daily'],
+['나는 그렇게 해왔어.','I\'ve been doing it that way.','daily'],
+['잠깐만요.','Just a moment, please. / Hold on.','daily'],
+['밥은 먹었어?','Have you eaten? / Did you eat?','daily'],
+['됐어.','Never mind. / Forget it. / That\'s enough.','daily'],
+['어떻게 됐어?','How did it go? / What happened?','daily'],
+['잘 됐다!','That worked out great! / I\'m glad it worked out!','daily'],
+['어디 보자...','Let me see... / Let me think...','daily'],
+['말도 안 돼.','That\'s impossible. / No way! / That can\'t be right.','daily'],
+['당연하지.','Of course. / Obviously. / Naturally.','daily'],
+['그러게.','I know, right? / Exactly. / Tell me about it.','daily'],
+['뭘요.','It\'s nothing. / Don\'t mention it. / No big deal.','daily'],
+['어쩐지.','No wonder! / That explains it! / So that\'s why.','daily'],
+['내가 그럴 줄 알았어.','I knew it! / I knew this would happen.','daily'],
+['나도 몰라.','I don\'t know either. / Don\'t ask me.','daily'],
+['이거 어떻게 쓰는 거야?','How do you use this? / How does this work?','daily'],
+['너무 오래 걸린다.','This is taking too long. / It\'s been too long.','daily'],
+['좀 있다가 할게.','I\'ll do it in a bit. / I\'ll get to it later.','daily'],
+['하루가 어떻게 갔지?','Where did the day go? / The day went by so fast.','daily'],
+['아직 멀었어?','Are we there yet? / Is it still far?','daily'],
+['거의 다 왔어.','We\'re almost there. / Almost done.','daily'],
+['조심해서 가.','Take care. / Be careful on your way.','daily'],
+['신경 쓰지 마.','Don\'t worry about it. / Don\'t let it bother you.','daily'],
+['그냥 두면 되잖아.','Just leave it. / Just let it be.','daily'],
+['뭐 먹을래?','What do you want to eat? / What do you feel like eating?','daily'],
+['그냥 집에 있을래.','I just want to stay home. / I\'d rather stay in.','daily'],
+['오늘 약속 있어.','I have plans today. / I\'m busy today.','daily'],
+['이미 했어.','I already did it. / It\'s already done.','daily'],
+['깜빡했어.','I forgot! / It slipped my mind.','daily'],
+['다음에 하자.','Let\'s do it next time.','daily'],
+['취소됐어.','It got cancelled. / It\'s been called off.','daily'],
+['일정이 바뀌었어.','The schedule changed. / Plans changed.','daily'],
+['좀 서두르자.','Let\'s hurry up. / We should pick up the pace.','daily'],
+['나 좀 이따 연락해.','Text me later. / Hit me up later.','daily'],
+['연락이 안 돼.','I can\'t reach them. / They\'re not picking up.','daily'],
+['이미 늦었어.','It\'s already too late. / We\'re too late.','daily'],
+['그냥 걸어가자.','Let\'s just walk. / Let\'s go on foot.','daily'],
+['주차할 데가 없어.','There\'s nowhere to park. / I can\'t find parking.','daily'],
+['길 막혔어.','There\'s traffic. / The road is jammed.','daily'],
+['다른 길로 가자.','Let\'s go a different way. / Let\'s take another route.','daily'],
+['알아서 할게.','I\'ll take care of it. / Leave it to me.','daily'],
+['어디서 많이 봤는데...','I\'ve seen this somewhere before...','daily'],
+['조금 더 지켜보자.','Let\'s wait and see. / Let\'s give it more time.','daily'],
+['일단 해봐.','Just try it. / Give it a shot.','daily'],
+['그냥 그러자.','Let\'s just do it. / Let\'s just go with it.','daily'],
+['선택지가 없어.','We don\'t have a choice. / There\'s no other option.','daily'],
+['이게 전부야?','Is this it? / Is this all there is?','daily'],
+['나는 그냥 빠질게.','I\'ll just sit this one out. / Count me out.','daily'],
+['뭔가 빠진 것 같아.','Something\'s missing. / I feel like we\'re forgetting something.','daily'],
+['그냥 넘어가자.','Let\'s just move on. / Let\'s let it go.','daily'],
+
+// ── 감정/기분 (51-100) ──
+['어이가 없어.','I can\'t believe this. / That\'s ridiculous.','emotion'],
+['황당해.','I\'m dumbfounded. / That\'s absurd.','emotion'],
+['짜증나.','I\'m so annoyed. / This is so frustrating.','emotion'],
+['답답해.','It\'s so frustrating. / I feel stuck.','emotion'],
+['억울해.','It\'s so unfair. / I feel wronged.','emotion'],
+['설렌다.','I\'m excited about it. / I can\'t wait.','emotion'],
+['뿌듯해.','I\'m proud of myself. / It feels rewarding.','emotion'],
+['아쉽다.','It\'s a shame. / Too bad. / I\'m a little disappointed.','emotion'],
+['신기해.','That\'s fascinating! / Wow, how interesting!','emotion'],
+['귀찮아.','It\'s such a hassle. / I can\'t be bothered.','emotion'],
+['그립다.','I miss it. / I miss you.','emotion'],
+['두근두근해.','My heart is racing. / I\'m so nervous/excited.','emotion'],
+['민망해.','I\'m embarrassed. / This is awkward.','emotion'],
+['창피해.','I\'m embarrassed. / That\'s so embarrassing.','emotion'],
+['화가 나.','I\'m angry. / I\'m upset.','emotion'],
+['속상해.','I\'m upset. / My feelings are hurt.','emotion'],
+['불안해.','I\'m anxious. / I feel uneasy.','emotion'],
+['걱정돼.','I\'m worried. / I\'m concerned.','emotion'],
+['깜짝 놀랐어.','I was so startled! / You scared me!','emotion'],
+['기분이 안 좋아.','I\'m not feeling great. / I\'m in a bad mood.','emotion'],
+['기분이 좋아.','I\'m in a good mood. / I feel great.','emotion'],
+['피곤해 죽겠어.','I\'m exhausted. / I\'m dead tired.','emotion'],
+['배고파 죽겠어.','I\'m starving. / I\'m so hungry.','emotion'],
+['졸려 죽겠어.','I\'m so sleepy. / I can barely keep my eyes open.','emotion'],
+['머리 아파.','I have a headache. / My head hurts.','emotion'],
+['몸이 안 좋아.','I\'m not feeling well. / I don\'t feel good.','emotion'],
+['컨디션이 별로야.','I\'m feeling off today. / I\'m not in great shape.','emotion'],
+['기운이 없어.','I have no energy. / I feel drained.','emotion'],
+['속이 안 좋아.','My stomach doesn\'t feel great. / I feel nauseous.','emotion'],
+['좀 쉬어야 할 것 같아.','I think I need some rest.','emotion'],
+['마음이 편해.','I feel at peace. / I feel relieved.','emotion'],
+['홀가분해.','I feel so free. / What a relief.','emotion'],
+['흐뭇해.','I\'m so pleased. / That makes me happy.','emotion'],
+['행복해.','I\'m happy. / I feel so happy.','emotion'],
+['즐거워.','I\'m having fun. / This is fun.','emotion'],
+['심심해.','I\'m bored. / There\'s nothing to do.','emotion'],
+['외로워.','I\'m lonely. / I feel lonely.','emotion'],
+['스트레스받아.','I\'m stressed out. / This is stressing me out.','emotion'],
+['긴장돼.','I\'m nervous. / I feel tense.','emotion'],
+['떨려.','I\'m nervous. / I\'m shaking.','emotion'],
+['지쳤어.','I\'m worn out. / I\'m completely exhausted.','emotion'],
+['재밌어.','This is fun. / This is interesting.','emotion'],
+['놀라워.','That\'s amazing. / I\'m surprised.','emotion'],
+['감동받았어.','I\'m moved. / I\'m touched.','emotion'],
+['후회돼.','I regret it. / I wish I hadn\'t done that.','emotion'],
+['기대된다.','I\'m looking forward to it. / I\'m excited.','emotion'],
+['다행이다.','What a relief. / I\'m so glad.','emotion'],
+['지루해.','This is boring. / I\'m bored.','emotion'],
+['진짜 좋아.','I really like this. / This is really good.','emotion'],
+['울고 싶어.','I feel like crying. / I want to cry.','emotion'],
+
+// ── 의견/생각 (101-150) ──
+['그거랑은 달라.','That\'s different. / It\'s not the same thing.','opinion'],
+['말이 되긴 해.','That makes sense, I suppose. / I can see the logic.','opinion'],
+['그건 아닌 것 같은데.','I don\'t think that\'s right. / That doesn\'t seem right.','opinion'],
+['어떻게 생각해?','What do you think? / What\'s your take?','opinion'],
+['사실 그게 맞아.','Actually, that\'s correct. / You\'re right about that.','opinion'],
+['뭔가 이상한 것 같아.','Something seems off. / This doesn\'t feel right.','opinion'],
+['딱히 뭐라 말하기 어렵네.','It\'s hard to say. / I can\'t quite put it into words.','opinion'],
+['그러게 말이야.','That\'s exactly what I\'m saying. / I know!','opinion'],
+['솔직히 말하면.','Honestly speaking. / To be honest.','opinion'],
+['사실 잘 모르겠어.','Actually, I\'m not really sure. / I honestly don\'t know.','opinion'],
+['억지로 하고 싶지는 않아.','I don\'t want to force it. / I don\'t want to push it.','opinion'],
+['그게 좋을 것 같아.','I think that would be good. / That sounds like a good idea.','opinion'],
+['잘 모르겠는데.','I\'m not sure. / I don\'t really know.','opinion'],
+['그냥 내 생각엔 그래.','That\'s just what I think. / Just my opinion.','opinion'],
+['반드시 그런 건 아니잖아.','That\'s not always the case. / It doesn\'t have to be that way.','opinion'],
+['한 번 생각해봐.','Think about it for a second. / Give it some thought.','opinion'],
+['어쩔 수 없잖아.','There\'s nothing we can do. / It can\'t be helped.','opinion'],
+['어떡해.','What do I do? / What should I do? / Oh no.','opinion'],
+['그게 더 나을 것 같아.','I think that\'s better. / That might be a better option.','opinion'],
+['잘 됐으면 좋겠다.','I hope it goes well. / I hope everything works out.','opinion'],
+['어차피 그렇게 될 것 같아.','It\'ll probably end up that way anyway.','opinion'],
+['시간이 지나면 괜찮아질 거야.','It\'ll be fine with time. / Things will get better.','opinion'],
+['나쁘지 않아.','It\'s not bad. / That\'s not too bad.','opinion'],
+['그럴 수도 있지.','That\'s possible. / I guess that\'s possible.','opinion'],
+['아마도 그럴 거야.','Probably. / I\'d say so.','opinion'],
+['확실하진 않아.','I\'m not certain. / I\'m not 100% sure.','opinion'],
+['그건 좀 너무한 것 같아.','I think that\'s a bit too much. / That\'s going a bit far.','opinion'],
+['완전히 틀린 건 아냐.','It\'s not entirely wrong. / You\'re not completely wrong.','opinion'],
+['딱 잘라 말하기 어렵네.','It\'s hard to say for sure. / I can\'t say definitively.','opinion'],
+['솔직히 동의하기 어렵네.','Honestly, I find it hard to agree.','opinion'],
+['뭐 그렇긴 한데.','Well, that\'s true, but... / I mean, yeah, but...','opinion'],
+['다 맞는 말이야.','Everything you\'re saying is right. / You\'re absolutely right.','opinion'],
+['내 탓이야.','It\'s my fault. / I\'m to blame.','opinion'],
+['그건 내 잘못이 아니야.','That\'s not my fault. / I\'m not responsible for that.','opinion'],
+['내 입장도 이해해줘.','Please understand my position too. / Try to see it from my side.','opinion'],
+['별로 중요하지 않아.','It\'s not that important. / It doesn\'t really matter.','opinion'],
+['크게 상관없어.','It doesn\'t matter much. / It\'s not a big deal.','opinion'],
+['어느 게 더 나아?','Which one is better? / Which would you prefer?','opinion'],
+['이게 낫지 않아?','Isn\'t this one better? / Don\'t you think this is better?','opinion'],
+['맞춰 줄게.','I\'ll go along with you. / I\'ll follow your lead.','opinion'],
+['그냥 네 맘대로 해.','Just do whatever you want. / It\'s up to you.','opinion'],
+['결정 못 하겠어.','I can\'t decide. / I\'m having trouble deciding.','opinion'],
+['알아서 해.','Figure it out. / Do what you think is best.','opinion'],
+['상관없어.','I don\'t mind. / It doesn\'t matter to me.','opinion'],
+['어떻든 상관없어.','Either way is fine with me. / I don\'t care either way.','opinion'],
+['그냥 따라갈게.','I\'ll just go along with it. / I\'ll just follow.','opinion'],
+['좀 이해해줘.','Please try to understand. / Bear with me.','opinion'],
+['너한테 달려 있어.','It\'s up to you. / The ball\'s in your court.','opinion'],
+['나도 그렇게 생각해.','I think so too. / I agree.','opinion'],
+['조금 다르게 생각하는데.','I think about it a little differently. / I see it differently.','opinion'],
+
+// ── 상황/관계 (151-200) ──
+['어쩌다 보니 그렇게 됐어.','It just kind of happened. / One thing led to another.','situation'],
+['하마터면 큰일 날 뻔했어.','I almost got in big trouble. / That was a close call.','situation'],
+['기억이 가물가물해.','My memory is fuzzy about that. / I barely remember.','situation'],
+['착각했어.','I was mistaken. / I made a mistake.','situation'],
+['헷갈렸어.','I got confused. / I mixed things up.','situation'],
+['그냥 그랬어.','It was just okay. / Nothing special. / So-so.','situation'],
+['그때는 그게 맞다고 생각했어.','I thought it was the right thing to do at the time.','situation'],
+['이렇게 됐어.','This is how it turned out. / This is where things ended up.','situation'],
+['사이가 멀어졌어.','We drifted apart. / We\'re not as close anymore.','situation'],
+['오해가 있었던 것 같아.','I think there was a misunderstanding.','situation'],
+['말 실수를 했어.','I said the wrong thing. / I misspoke.','situation'],
+['눈치가 없어.','They can\'t read the room. / They have no social awareness.','situation'],
+['선 넘었어.','They crossed a line. / That went too far.','situation'],
+['얘기하기가 좀 어렵네.','It\'s hard to bring up. / It\'s a sensitive topic.','situation'],
+['솔직하게 말해줘서 고마워.','Thank you for being honest with me.','situation'],
+['털어놓고 싶었어.','I wanted to get it off my chest. / I needed to vent.','situation'],
+['오랜만에 연락이 왔어.','They reached out after a long time. / I heard from them out of the blue.','situation'],
+['자주 연락하고 지내.','We keep in touch. / We stay in contact.','situation'],
+['어색해.','It\'s awkward. / This is uncomfortable.','situation'],
+['분위기가 이상해.','The vibe is off. / The atmosphere is a bit weird.','situation'],
+['말이 안 통해.','We can\'t communicate. / They just don\'t get it.','situation'],
+['대화가 잘 통해.','We communicate well. / We\'re on the same wavelength.','situation'],
+['말을 너무 심하게 했어.','That was too harsh. / They said something really unkind.','situation'],
+['상처받았어.','I was hurt. / That hurt my feelings.','situation'],
+['기분 나빴어.','That bothered me. / I felt bad about it.','situation'],
+['신경 안 쓰려고 했는데.','I tried not to let it bother me. / I tried to brush it off.','situation'],
+['그냥 모른 척했어.','I just pretended not to notice. / I let it slide.','situation'],
+['참는 게 힘들어.','It\'s hard to hold back. / It\'s hard to be patient.','situation'],
+['이제 그만해.','That\'s enough. / Stop it now.','situation'],
+['우리 그냥 웃고 넘어가자.','Let\'s just laugh it off. / Let\'s just move on.','situation'],
+['덕분에 잘 됐어.','It worked out thanks to you. / You really came through for me.','situation'],
+['도움이 많이 됐어.','It was a big help. / You helped me a lot.','situation'],
+['잘 부탁해.','I\'m counting on you. / Please take care of it.','situation'],
+['고생했어.','You worked hard. / Good job. / That was tough.','situation'],
+['수고했어.','Good work. / Nice job. / You did well.','situation'],
+['고마워, 진짜로.','I really mean it, thank you. / I\'m genuinely grateful.','situation'],
+['아무것도 아니야.','It\'s nothing. / It\'s no big deal.','situation'],
+['어떻게든 될 거야.','It\'ll work out somehow. / Things will figure themselves out.','situation'],
+['힘내.','Hang in there. / You\'ve got this. / Cheer up.','situation'],
+['잘 될 거야.','It\'ll be fine. / Things will work out.','situation'],
+['걱정하지 마.','Don\'t worry. / Don\'t stress about it.','situation'],
+['같이 있어줄게.','I\'ll be here with you. / I\'m here for you.','situation'],
+['그럴 껄 (그랬어야 했는데).','I should have done that. / I knew I should have.','situation'],
+['뭐 이렇게 했던 것 같아.','I think I did it something like this. / It\'s hazy but something like this.','situation'],
+['그럴 것 같았어.','I had a feeling. / I kind of suspected that.','situation'],
+['어쩌다 그렇게 됐어.','How did it end up like this? / How did things get this way?','situation'],
+['그냥 그렇게 살아왔어.','I\'ve just lived that way. / That\'s just how I\'ve always done things.','situation'],
+['나름대로 최선을 다했어.','I did my best in my own way. / I tried my hardest.','situation'],
+['사실 하고 싶지 않았어.','Honestly, I didn\'t want to do it.','situation'],
+['어쩔 수 없이 했어.','I had no choice but to do it. / I was forced into it.','situation'],
+];
+
+// ============================================================
+// DATA — 테마별
+// ============================================================
+const THEMES=[
+{name:'공항',emoji:'✈️',gradient:'linear-gradient(135deg,#6366F1,#8B5CF6)',color:'#6366F1',
+ phrases:[
+  ['탑승 게이트가 어디예요?','Where is the boarding gate?'],
+  ['수하물을 어디서 찾아요?','Where do I pick up my luggage?'],
+  ['탑승권을 발급해주세요.','Can I get a boarding pass, please?'],
+  ['수하물이 초과됐어요.','My luggage is overweight.'],
+  ['짐을 부쳐주세요.','I\'d like to check this bag, please.'],
+  ['창가 자리로 해주세요.','I\'d like a window seat, please.'],
+  ['통로 자리로 해주세요.','I\'d like an aisle seat, please.'],
+  ['면세점은 어디 있어요?','Where is the duty-free shop?'],
+  ['비행기가 연착됐어요.','The flight has been delayed.'],
+  ['짐이 안 나왔어요.','My luggage didn\'t come out. / My bag is missing.'],
+  ['출국 심사가 어디예요?','Where is passport control / immigration?'],
+  ['환승은 어디서 해요?','Where do I make my connection?'],
+  ['방문 목적이 뭔가요?','What is the purpose of your visit?'],
+  ['얼마나 머물 예정인가요?','How long are you planning to stay?'],
+  ['신고할 물건이 있나요?','Do you have anything to declare?'],
+  ['액체류는 반입이 안 되나요?','Are liquids not allowed to bring on board?'],
+  ['비행기가 몇 시에 출발해요?','What time does the flight depart?'],
+  ['탑승이 언제 시작돼요?','When does boarding start?'],
+  ['수하물은 몇 개까지 가져갈 수 있어요?','How many bags can I check in?'],
+  ['탑승권 보여주세요.','Please show me your boarding pass.'],
+ ]},
+{name:'식당',emoji:'🍽️',gradient:'linear-gradient(135deg,#EF4444,#F97316)',color:'#EF4444',
+ phrases:[
+  ['몇 분이세요?','How many people in your party?'],
+  ['자리 있어요?','Do you have a table available?'],
+  ['예약했어요.','I have a reservation.'],
+  ['메뉴판 주세요.','Can I get a menu, please?'],
+  ['추천 메뉴가 뭐예요?','What do you recommend?'],
+  ['이거 맵나요?','Is this spicy?'],
+  ['알레르기가 있어요.','I have an allergy.'],
+  ['포장해 주세요.','Can I get this to go? / I\'d like to take this out.'],
+  ['계산해 주세요.','Can I get the bill, please? / Check, please.'],
+  ['카드 되나요?','Do you accept cards?'],
+  ['영수증 주세요.','Can I get a receipt?'],
+  ['좀 더 익혀주세요.','Can you cook it a bit more?'],
+  ['덜 맵게 해주세요.','Can you make it less spicy, please?'],
+  ['주문할게요.','I\'m ready to order.'],
+  ['이거 잘못 나온 것 같아요.','I think this isn\'t what I ordered.'],
+  ['따로따로 계산해 주세요.','Can we pay separately?'],
+  ['맛있었어요!','It was delicious! / Everything was great!'],
+  ['잠깐만요! (직원 부를 때)','Excuse me! (to call a server)'],
+  ['리필 되나요?','Can I get a refill?'],
+  ['테이블 좀 닦아주실 수 있어요?','Could you clean the table, please?'],
+ ]},
+{name:'카페',emoji:'☕',gradient:'linear-gradient(135deg,#F59E0B,#EF4444)',color:'#F59E0B',
+ phrases:[
+  ['아이스로 주세요.','Can I get that iced, please?'],
+  ['뜨겁게 주세요.','Can I get that hot, please?'],
+  ['얼음 빼주세요.','No ice, please.'],
+  ['시럽 추가해 주세요.','Extra syrup, please.'],
+  ['샷 추가해 주세요.','Can I get an extra shot of espresso?'],
+  ['사이즈 업 해주세요.','Can I upsize that, please?'],
+  ['카페인 없는 걸로 해주세요.','Can I get a decaf, please?'],
+  ['테이크아웃이에요.','For takeaway, please. / To go, please.'],
+  ['자리에서 드실 건가요?','Will you be having it here?'],
+  ['이름이 어떻게 되세요?','What name should I put on the order?'],
+  ['와이파이 비밀번호 뭐예요?','What\'s the Wi-Fi password?'],
+  ['콘센트 있어요?','Is there an outlet I can use?'],
+  ['오늘의 커피는 뭐예요?','What\'s the coffee of the day?'],
+  ['포인트 카드 있으세요?','Do you have a loyalty/rewards card?'],
+  ['주문한 거 나왔나요?','Is my order ready?'],
+  ['이거 뭐 들어가요?','What\'s in this? / What are the ingredients?'],
+  ['당 낮은 걸로 추천해주세요.','Can you recommend something low in sugar?'],
+  ['따뜻한 음료 하나만 주세요.','Just one hot drink, please.'],
+ ]},
+{name:'쇼핑',emoji:'🛍️',gradient:'linear-gradient(135deg,#10B981,#0EA5E9)',color:'#10B981',
+ phrases:[
+  ['다른 색 있어요?','Do you have this in another color?'],
+  ['다른 사이즈 있어요?','Do you have this in a different size?'],
+  ['입어봐도 돼요?','Can I try this on?'],
+  ['탈의실이 어디예요?','Where is the fitting room?'],
+  ['얼마예요?','How much is this?'],
+  ['좀 더 싼 거 있어요?','Do you have something cheaper?'],
+  ['세일 중인 건가요?','Is this on sale?'],
+  ['환불/교환 되나요?','Can I get a refund or exchange?'],
+  ['영수증 있어야 하나요?','Do I need a receipt for that?'],
+  ['선물 포장해 주시겠어요?','Could you gift-wrap this?'],
+  ['재고가 없어요?','Is it out of stock?'],
+  ['다시 들어오나요?','Will it be restocked?'],
+  ['세금이 포함된 가격인가요?','Is tax included in the price?'],
+  ['카드 결제가 안 돼요.','My card isn\'t working.'],
+  ['이게 제일 잘 팔려요?','Is this your bestseller?'],
+  ['할인 쿠폰 있어요.','I have a discount coupon.'],
+  ['적립해 드릴까요?','Would you like to earn points?'],
+  ['이거 온라인으로도 살 수 있어요?','Can I buy this online too?'],
+  ['새 제품으로 주세요.','Can I get a new one? / Do you have one that\'s not opened?'],
+  ['이 브랜드 다른 제품도 있어요?','Do you have other products from this brand?'],
+ ]},
+{name:'병원',emoji:'🏥',gradient:'linear-gradient(135deg,#0EA5E9,#6366F1)',color:'#0EA5E9',
+ phrases:[
+  ['오늘 진료 받을 수 있나요?','Can I see a doctor today?'],
+  ['예약을 하고 싶어요.','I\'d like to make an appointment.'],
+  ['어디가 불편하세요?','What seems to be the problem? / What\'s bothering you?'],
+  ['언제부터 그러셨어요?','When did this start?'],
+  ['어느 정도로 아프세요?','How bad is the pain? (Scale of 1 to 10?)'],
+  ['약 알레르기 있으세요?','Do you have any drug allergies?'],
+  ['처방전을 드릴게요.','I\'ll write you a prescription.'],
+  ['약국에서 받으시면 돼요.','You can pick this up at the pharmacy.'],
+  ['하루에 세 번 드세요.','Take it three times a day.'],
+  ['식후에 드세요.','Take it after meals.'],
+  ['며칠 쉬시는 게 좋겠어요.','You should rest for a few days.'],
+  ['검사를 해봐야 해요.','We\'ll need to run some tests.'],
+  ['엑스레이를 찍어볼게요.','We\'ll take an X-ray.'],
+  ['다음 주에 다시 오세요.','Please come back next week.'],
+  ['입원이 필요해요.','You need to be admitted to the hospital.'],
+  ['체온을 재볼게요.','Let me take your temperature.'],
+  ['혈압을 재볼게요.','I\'m going to check your blood pressure.'],
+  ['처음 오셨나요?','Is this your first visit?'],
+  ['보험 카드 있으세요?','Do you have your insurance card?'],
+  ['병원비가 얼마예요?','How much is the bill?'],
+ ]},
+{name:'호텔',emoji:'🏨',gradient:'linear-gradient(135deg,#8B5CF6,#EC4899)',color:'#8B5CF6',
+ phrases:[
+  ['체크인할게요.','I\'d like to check in.'],
+  ['예약하셨나요?','Do you have a reservation?'],
+  ['체크아웃 시간이 언제예요?','What time is checkout?'],
+  ['짐을 맡겨도 될까요?','Can I leave my luggage here?'],
+  ['수건을 더 주실 수 있어요?','Could I get more towels?'],
+  ['방 청소를 해주세요.','Could you clean the room, please?'],
+  ['에어컨이 안 돼요.','The air conditioning isn\'t working.'],
+  ['와이파이가 안 잡혀요.','The Wi-Fi isn\'t working.'],
+  ['다른 방으로 바꿀 수 있어요?','Can I change to a different room?'],
+  ['룸서비스 되나요?','Do you offer room service?'],
+  ['조식이 포함인가요?','Is breakfast included?'],
+  ['수영장은 몇 시까지예요?','What time does the pool close?'],
+  ['택시를 불러주시겠어요?','Could you call a taxi for me?'],
+  ['주변에 편의점 있어요?','Is there a convenience store nearby?'],
+  ['늦게 체크아웃 가능해요?','Is a late checkout possible?'],
+  ['영수증 부탁드려요.','Could I have a receipt, please?'],
+  ['이 근처 맛집 추천해줄 수 있어요?','Can you recommend a good restaurant nearby?'],
+  ['짐을 방으로 올려주세요.','Could you bring my bags up to the room?'],
+ ]},
+{name:'교통',emoji:'🚇',gradient:'linear-gradient(135deg,#F97316,#EF4444)',color:'#F97316',
+ phrases:[
+  ['어떻게 가야 해요?','How do I get there? / Which way should I go?'],
+  ['얼마나 걸려요?','How long does it take?'],
+  ['다음 버스가 몇 시에 와요?','When does the next bus come?'],
+  ['이 버스 시청에 가요?','Does this bus go to City Hall?'],
+  ['어디서 갈아타야 해요?','Where should I transfer?'],
+  ['내릴 곳을 지나쳤어요.','I missed my stop.'],
+  ['편도로 주세요.','One-way ticket, please.'],
+  ['왕복으로 주세요.','Round-trip ticket, please.'],
+  ['이 자리 비었나요?','Is this seat taken?'],
+  ['여기 세워주세요.','Can you stop here, please? / Drop me off here.'],
+  ['이 근처에 주차장 있어요?','Is there a parking lot nearby?'],
+  ['기름이 거의 없어요.','I\'m almost out of gas. / The tank is nearly empty.'],
+  ['길을 잃었어요.','I\'m lost. / I got lost.'],
+  ['가장 빠른 길이 어디예요?','What\'s the fastest way to get there?'],
+  ['택시비가 얼마나 나와요?','How much will the taxi fare be roughly?'],
+  ['지하철 몇 호선 타야 해요?','Which subway line should I take?'],
+  ['지도 보여주실 수 있어요?','Could you show me on the map?'],
+ ]},
+{name:'직장',emoji:'💼',gradient:'linear-gradient(135deg,#475569,#334155)',color:'#475569',
+ phrases:[
+  ['회의가 몇 시예요?','What time is the meeting?'],
+  ['제가 맡을게요.','I\'ll take care of it. / I\'ll handle it.'],
+  ['보고서 언제까지예요?','When is the report due?'],
+  ['잠깐 얘기할 수 있어요?','Do you have a minute? / Can we talk?'],
+  ['도움이 필요해요.','I need some help.'],
+  ['오늘 좀 일찍 퇴근해도 될까요?','Is it okay if I leave a bit early today?'],
+  ['재택근무 가능한가요?','Can I work from home?'],
+  ['휴가 신청하고 싶어요.','I\'d like to request time off.'],
+  ['실수한 것 같아요.','I think I made a mistake.'],
+  ['제가 잘못 이해한 것 같아요.','I think I misunderstood.'],
+  ['기한이 언제예요?','What\'s the deadline?'],
+  ['오늘 야근해야 해요?','Do I need to work overtime today?'],
+  ['진행이 어떻게 되고 있어요?','How is it coming along? / What\'s the progress?'],
+  ['다시 한번 확인해볼게요.','Let me double-check that.'],
+  ['제가 담당자예요.','I\'m the person in charge. / I\'m handling this.'],
+  ['메일 보내드릴게요.','I\'ll send you an email.'],
+  ['회의 일정을 잡아도 될까요?','Can we schedule a meeting?'],
+ ]},
+];
+
+// ============================================================
+// STATE
+// ============================================================
+const st={
+  tab:'daily',
+  catFilter:'all',
+  search:'',
+  knownSet:new Set(),
+  revealedSet:new Set(),
+  currentThemeIdx:null,
+  quiz:{
+    quizType:'theme',
+    dailyCat:null,
+    themeIdx:null,
+    questions:[],
+    current:0,
+    score:0,
+    wrongItems:[],
+    answered:false,
+    done:false
+  }
+};
+
+function loadSt(){
+  try{
+    const s=JSON.parse(localStorage.getItem('phrases_v1')||'{}');
+    if(s.known)s.known.forEach(i=>st.knownSet.add(i));
+  }catch(e){}
+}
+function saveSt(){
+  localStorage.setItem('phrases_v1',JSON.stringify({known:[...st.knownSet]}));
+}
+
+// TTS
+function speak(txt){
+  if(!window.speechSynthesis)return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(txt);
+  u.lang='en-CA';u.rate=0.85;u.pitch=1.0;
+  const v=window.speechSynthesis.getVoices().find(v=>v.lang.startsWith('en')&&!v.name.toLowerCase().includes('korean'));
+  if(v)u.voice=v;
+  window.speechSynthesis.speak(u);
+}
+if(window.speechSynthesis){
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();
+}
+
+// ============================================================
+// RENDER — DAILY
+// ============================================================
+const CAT_LABELS={all:'전체',daily:'일상/행동',emotion:'감정/기분',opinion:'의견/생각',situation:'상황/관계'};
+const CAT_ICONS={all:'📋',daily:'🗓️',emotion:'💭',opinion:'🤔',situation:'🤝'};
+
+function renderDaily(){
+  const filtered=DAILY.filter((p,i)=>{
+    const matchCat=st.catFilter==='all'||p[2]===st.catFilter;
+    const matchSearch=!st.search||p[0].includes(st.search)||p[1].toLowerCase().includes(st.search.toLowerCase());
+    return matchCat&&matchSearch;
+  });
+
+  let html=`<div class="stats-bar">
+    <div class="stat-chip"><div class="stat-num">${st.knownSet.size}</div><div class="stat-lbl">외웠어 ✓</div></div>
+    <div class="stat-chip"><div class="stat-num">${DAILY.length-st.knownSet.size}</div><div class="stat-lbl">남은 표현</div></div>
+    <div class="stat-chip"><div class="stat-num">${DAILY.length}</div><div class="stat-lbl">전체</div></div>
+  </div>
+  <div class="cat-chips">`;
+  Object.entries(CAT_LABELS).forEach(([k,v])=>{
+    html+=`<button class="cat-chip${st.catFilter===k?' active':''}" onclick="setCat('${k}')">${CAT_ICONS[k]} ${v}</button>`;
+  });
+  const catPool=DAILY.filter(p=>st.catFilter==='all'||p[2]===st.catFilter);
+  const bestDScore=getDailyBestScore(st.catFilter);
+  const qTotal=Math.min(10,catPool.length);
+  html+=`</div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:var(--gap);background:white;border-radius:12px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.05)">
+    <div style="flex:1">
+      <div style="font-size:13px;font-weight:700;color:var(--txt)">${CAT_ICONS[st.catFilter]} ${CAT_LABELS[st.catFilter]} 시험</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">${catPool.length}개 중 랜덤 ${qTotal}문제${bestDScore!==null?' · 최고 '+bestDScore+'/'+qTotal+'점':''}</div>
+    </div>
+    <button onclick="startDailyQuiz('${st.catFilter}')" style="padding:9px 18px;border:none;border-radius:10px;background:linear-gradient(135deg,#4338CA,#8B5CF6);color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">📝 시험보기</button>
+  </div>
+  <div class="search-wrap">
+    <span class="search-ico">🔍</span>
+    <input class="search-input" placeholder="한국어 또는 영어로 검색..." value="${st.search}" oninput="setSearch(this.value)">
+  </div>`;
+
+  if(!filtered.length){
+    html+=`<div class="no-results"><div class="nr-ico">🔎</div>검색 결과가 없어요.</div>`;
+  } else {
+    html+=`<div class="phrase-grid">`;
+    filtered.forEach((p,fi)=>{
+      const i=DAILY.indexOf(p);
+      const isRevealed=st.revealedSet.has(i);
+      const isKnown=st.knownSet.has(i);
+      html+=`<div class="pc${isRevealed?' revealed':''}${isKnown?' known':''}" id="pc${i}" onclick="revealCard(${i})">
+        <div class="pc-top">
+          <div class="pc-cat">${CAT_ICONS[p[2]]} ${CAT_LABELS[p[2]]}</div>
+          <div class="pc-ko">${p[0]}</div>
+          <div class="pc-hint">탭하면 영어 표현 보기 👆</div>
+          <div class="pc-en">${p[1]}</div>
+        </div>
+        <div class="pc-actions">
+          <button class="pc-tts" onclick="event.stopPropagation();speak('${p[1].replace(/'/g,"\\'").split(' / ')[0]}')" title="발음 듣기">🔊</button>
+          <button class="pc-known-btn ${isKnown?'yes':'no'}" onclick="event.stopPropagation();toggleKnown(${i})">${isKnown?'✓ 외웠어':'외웠어 ✓'}</button>
+        </div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+  document.getElementById('dailySection').innerHTML=html;
+}
+
+window.setCat=function(cat){st.catFilter=cat;renderDaily();};
+window.setSearch=function(v){st.search=v;renderDaily();};
+window.revealCard=function(i){
+  st.revealedSet.add(i);
+  const el=document.getElementById('pc'+i);
+  if(el)el.classList.add('revealed');
+};
+window.toggleKnown=function(i){
+  if(st.knownSet.has(i))st.knownSet.delete(i);
+  else st.knownSet.add(i);
+  saveSt();
+  renderDaily();
+};
+
+// ============================================================
+// RENDER — THEME
+// ============================================================
+function renderTheme(){
+  if(st.currentThemeIdx===null){
+    renderThemeGrid();
+  } else {
+    renderThemeDetail(st.currentThemeIdx);
+  }
+}
+
+function renderThemeGrid(){
+  let html=`<div class="theme-grid">`;
+  THEMES.forEach((t,i)=>{
+    const bestScore=getBestScore(i);
+    html+=`<div class="theme-card" style="background:${t.gradient}" onclick="openTheme(${i})">
+      ${bestScore!==null?`<div class="theme-done">${bestScore}/${Math.min(10,t.phrases.length)}점</div>`:''}
+      <div class="theme-emoji">${t.emoji}</div>
+      <div class="theme-name">${t.name}</div>
+      <div class="theme-count">${t.phrases.length}개 표현</div>
+    </div>`;
+  });
+  html+=`</div>`;
+  document.getElementById('themeSection').innerHTML=html;
+}
+
+function getBestScore(idx){
+  try{
+    const scores=JSON.parse(localStorage.getItem('phrase_scores')||'{}');
+    return scores[idx]??null;
+  }catch(e){return null;}
+}
+function saveScore(idx,score){
+  try{
+    const scores=JSON.parse(localStorage.getItem('phrase_scores')||'{}');
+    if(scores[idx]===undefined||score>scores[idx])scores[idx]=score;
+    localStorage.setItem('phrase_scores',JSON.stringify(scores));
+  }catch(e){}
+}
+function getDailyBestScore(cat){
+  try{
+    const scores=JSON.parse(localStorage.getItem('phrase_daily_scores')||'{}');
+    return scores[cat]??null;
+  }catch(e){return null;}
+}
+function saveDailyScore(cat,score){
+  try{
+    const scores=JSON.parse(localStorage.getItem('phrase_daily_scores')||'{}');
+    if(scores[cat]===undefined||score>scores[cat])scores[cat]=score;
+    localStorage.setItem('phrase_daily_scores',JSON.stringify(scores));
+  }catch(e){}
+}
+
+window.openTheme=function(i){
+  st.currentThemeIdx=i;
+  renderThemeDetail(i);
+};
+
+function renderThemeDetail(i){
+  const t=THEMES[i];
+  let html=`<div class="theme-detail show">
+    <div class="tdh" style="background:${t.gradient}">
+      <button class="tdh-back" onclick="closeTheme()">← 뒤로</button>
+      <div class="tdh-info">
+        <div class="tdh-name">${t.emoji} ${t.name}</div>
+        <div class="tdh-sub">${t.phrases.length}개 표현 · 탭하면 발음 들어요 🔊</div>
+      </div>
+      <button class="tdh-quiz" onclick="startQuiz(${i})" style="color:${t.color}">📝 시험보기</button>
+    </div>
+    <div class="theme-phrases">`;
+  t.phrases.forEach((p,pi)=>{
+    const enSafe=p[1].replace(/'/g,"\\'");
+    html+=`<div class="tp-item">
+      <div class="tp-num">${pi+1}</div>
+      <div class="tp-ko">${p[0]}</div>
+      <div class="tp-divider">→</div>
+      <div class="tp-en">${p[1]}</div>
+      <button class="tp-tts" onclick="speak('${enSafe.split(' / ')[0]}')" title="발음 듣기">🔊</button>
+    </div>`;
+  });
+  html+=`</div></div>`;
+  document.getElementById('themeSection').innerHTML=html;
+}
+
+window.closeTheme=function(){
+  st.currentThemeIdx=null;
+  renderThemeGrid();
+};
+
+// ============================================================
+// QUIZ
+// ============================================================
+function shuffle(arr){return [...arr].sort(()=>Math.random()-.5);}
+
+window.startQuiz=function(themeIdx){
+  const t=THEMES[themeIdx];
+  const shuffled=shuffle(t.phrases);
+  const pool=shuffled.slice(0,Math.min(10,shuffled.length));
+  st.quiz={
+    quizType:'theme',dailyCat:null,
+    themeIdx,
+    questions:pool.map((p,qi)=>{
+      const dir=Math.random()>.5?'ko2en':'en2ko';
+      const wrongPool=t.phrases.filter(x=>x!==p);
+      const wrongs=shuffle(wrongPool).slice(0,3);
+      const opts=shuffle([p,...wrongs]);
+      return{p,dir,opts,correct:opts.indexOf(p),answered:false,selected:null};
+    }),
+    current:0,score:0,wrongItems:[],answered:false,done:false
+  };
+  renderQuizQuestion();
+  document.getElementById('quizModal').classList.add('show');
+};
+
+window.startDailyQuiz=function(cat){
+  const pool=DAILY.filter(p=>cat==='all'||p[2]===cat);
+  const shuffled=shuffle(pool);
+  const qPool=shuffled.slice(0,Math.min(10,shuffled.length));
+  st.quiz={
+    quizType:'daily',dailyCat:cat,
+    themeIdx:null,
+    questions:qPool.map(p=>{
+      const dir=Math.random()>.5?'ko2en':'en2ko';
+      const wrongPool=pool.filter(x=>x!==p);
+      const wrongs=shuffle(wrongPool).slice(0,3);
+      const opts=shuffle([p,...wrongs]);
+      return{p,dir,opts,correct:opts.indexOf(p),answered:false,selected:null};
+    }),
+    current:0,score:0,wrongItems:[],answered:false,done:false
+  };
+  renderQuizQuestion();
+  document.getElementById('quizModal').classList.add('show');
+};
+
+function renderQuizQuestion(){
+  const q=st.quiz;
+  if(q.done){renderQuizResult();return;}
+  const cur=q.questions[q.current];
+  const pct=((q.current)/q.questions.length)*100;
+
+  let html=`<div class="qz-hdr">
+    <span class="qz-prog-txt">${q.current+1} / ${q.questions.length}</span>
+    <span class="qz-score-live">✓ ${q.score}개 정답</span>
+  </div>
+  <div class="qz-bar-track"><div class="qz-bar-fill" style="width:${pct}%"></div></div>
+  <div class="qz-dir">${cur.dir==='ko2en'?'🇰🇷 한국어 → 영어':'🇺🇸 영어 → 한국어'}</div>
+  <div class="qz-q">${cur.dir==='ko2en'?cur.p[0]:cur.p[1]}</div>
+  <div class="qz-opts">`;
+  cur.opts.forEach((opt,oi)=>{
+    const display=cur.dir==='ko2en'?opt[1]:opt[0];
+    let cls='qz-opt';
+    if(cur.answered){
+      if(oi===cur.correct)cls+=' correct';
+      else if(oi===cur.selected)cls+=' wrong';
+    }
+    html+=`<button class="qz-opt${cur.answered?(oi===cur.correct?' correct':oi===cur.selected?' wrong':''):''}"
+      onclick="answerQuiz(${oi})" ${cur.answered?'disabled':''}>${display}</button>`;
+  });
+  html+=`</div>`;
+  if(cur.answered){
+    const isRight=cur.selected===cur.correct;
+    html+=`<div class="qz-feedback show ${isRight?'ok':'no'}">${isRight?'✅ 정답!':'❌ 오답. 정답: '+cur.opts[cur.correct][cur.dir==='ko2en'?1:0]}</div>`;
+  }
+  html+=`<button class="qz-next${cur.answered?' show':''}" onclick="nextQuizQuestion()">${q.current+1<q.questions.length?'다음 문제 →':'결과 보기 →'}</button>`;
+  document.getElementById('quizBox').innerHTML=html;
+}
+
+window.answerQuiz=function(oi){
+  const q=st.quiz;
+  const cur=q.questions[q.current];
+  if(cur.answered)return;
+  cur.answered=true;
+  cur.selected=oi;
+  if(oi===cur.correct){q.score++;}
+  else{q.wrongItems.push(cur.p);}
+  renderQuizQuestion();
+};
+
+window.nextQuizQuestion=function(){
+  const q=st.quiz;
+  if(q.current+1>=q.questions.length){
+    q.done=true;
+    if(q.quizType==='daily')saveDailyScore(q.dailyCat,q.score);
+    else saveScore(q.themeIdx,q.score);
+    renderQuizResult();
+  } else {
+    q.current++;
+    renderQuizQuestion();
+  }
+};
+
+function renderQuizResult(){
+  const q=st.quiz;
+  const total=q.questions.length;
+  const pct=Math.round(q.score/total*100);
+  const emoji=pct===100?'🏆':pct>=80?'🎉':pct>=60?'💪':'📖';
+  const msg=pct===100?'완벽해요!':pct>=80?'아주 잘했어요!':pct>=60?'잘했어요!':'모범 표현을 다시 공부해보세요.';
+  let html=`<div class="qr">
+    <div class="qr-emoji">${emoji}</div>
+    <div class="qr-title">${msg}</div>
+    <div class="qr-score">${q.score} / ${total}</div>
+    <div class="qr-sub">${q.quizType==='daily'?(CAT_LABELS[q.dailyCat]||'전체')+' 카테고리':THEMES[q.themeIdx].name+' 테마'} · 정답률 ${pct}%</div>`;
+  if(q.wrongItems.length){
+    html+=`<div class="qr-review">
+      <div class="qr-review-title">❌ 틀린 표현 복습 (${q.wrongItems.length}개)</div>`;
+    q.wrongItems.forEach(p=>{
+      html+=`<div class="qr-wrong-item"><div class="qr-wrong-ko">${p[0]}</div><div class="qr-wrong-en">${p[1]}</div></div>`;
+    });
+    html+=`</div>`;
+  }
+  const retryFn=q.quizType==='daily'?`startDailyQuiz('${q.dailyCat}')`:`startQuiz(${q.themeIdx})`;
+  html+=`<div class="qr-btns">
+    <button class="qr-btn qr-retry" onclick="${retryFn}">🔄 다시 풀기</button>
+    <button class="qr-btn qr-close" onclick="closeQuiz()">닫기</button>
+  </div></div>`;
+  document.getElementById('quizBox').innerHTML=html;
+}
+
+window.closeQuiz=function(){
+  document.getElementById('quizModal').classList.remove('show');
+  if(st.quiz.quizType==='daily')renderDaily();
+  else renderTheme();
+};
+window.handleModalClick=function(e){
+  if(e.target.id==='quizModal')closeQuiz();
+};
+
+// ============================================================
+// TAB / INIT
+// ============================================================
+window.switchTab=function(tab){
+  st.tab=tab;
+  document.getElementById('tabDaily').className='tab'+(tab==='daily'?' active':'');
+  document.getElementById('tabTheme').className='tab'+(tab==='theme'?' active':'');
+  document.getElementById('dailySection').style.display=tab==='daily'?'':'none';
+  document.getElementById('themeSection').style.display=tab==='theme'?'':'none';
+  if(tab==='daily')renderDaily();
+  else renderTheme();
+};
+
+loadSt();
+renderDaily();
+</script>
+</body>
+</html>
